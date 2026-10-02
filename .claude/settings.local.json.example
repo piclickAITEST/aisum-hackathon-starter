@@ -1,0 +1,5 @@
+{
+  "env": {
+    "ANTHROPIC_AUTH_TOKEN": "replace-with-your-coding-agent-key"
+  }
+}

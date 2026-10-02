@@ -157,10 +157,29 @@ If sign-in fails only after deployment with `auth/unauthorized-domain`, add the 
 Run domain to the Firebase project's authorized domains. Localhost is normally already
 allowed; a new deployed domain is not.
 
-## Claude Code MCP connection
+## Claude Code setup
 
-This repository also configures the MCP server for Claude Code. The app runtime and
-your coding agent are two separate MCP connections:
+The app runtime and your coding agent are two separate connections. The repository
+includes `.mcp.json` for the MCP tools and `.claude/settings.example.json` plus
+`.claude/settings.local.json.example` for the coding-agent settings.
+
+Copy the two Claude Code templates after the organizers give you the real coding
+Gateway host, model name, and coding key:
+
+```bash
+cp .claude/settings.example.json .claude/settings.json
+cp .claude/settings.local.json.example .claude/settings.local.json
+# edit the three placeholders in settings.json and the key in settings.local.json
+```
+
+Do not commit either copied live file. `.gitignore` excludes them because they may
+contain internal URLs and credentials. The settings template deliberately uses
+placeholders: Claude Code reads `settings.json` as a live configuration, so an
+unusable placeholder URL or model would make the session fail rather than merely
+explain what to do.
+
+### Claude Code MCP connection
+
 
 ```bash
 export AISUM_TEAM_KEY="$MCP_API_KEY"

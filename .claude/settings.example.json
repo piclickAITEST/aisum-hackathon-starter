@@ -1,0 +1,7 @@
+{
+  "env": {
+    "ANTHROPIC_BASE_URL": "https://<AISUM-coding-gateway-host>",
+    "ANTHROPIC_MODEL": "<model-name-from-organizers>",
+    "ANTHROPIC_SMALL_FAST_MODEL": "<model-name-from-organizers>"
+  }
+}
