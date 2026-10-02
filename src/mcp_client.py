@@ -37,6 +37,20 @@ class McpError(RuntimeError):
         self.raw = raw
 
 
+def _check_http(r: httpx.Response) -> None:
+    """Turn an HTTP-level failure into an McpError that names the setting to check.
+
+    A wrong key fails here, on `initialize`, before any tool runs — and a bare
+    `401 Unauthorized` does not say which of your two keys it was.
+    """
+    if r.is_success:
+        return
+    hint = (" — check MCP_API_KEY (this is the MCP key, not the LLM key)"
+            if r.status_code in (401, 403) else " — check MCP_URL")
+    raise McpError(f"MCP server answered HTTP {r.status_code}{hint}",
+                   code=f"HTTP_{r.status_code}", raw=r.text[:500])
+
+
 def _parse_body(text: str) -> dict:
     """Pull the JSON-RPC message out of an SSE body (`data: {...}`)."""
     for line in text.splitlines():
@@ -85,7 +99,7 @@ class McpClient:
                 },
             },
         )
-        r.raise_for_status()
+        _check_http(r)
         self._session_id = r.headers["mcp-session-id"]
         # The server rejects tools/call until this notification has been sent.
         await self._client.post(
@@ -96,20 +110,28 @@ class McpClient:
 
     async def call(self, name: str, arguments: dict) -> dict:
         """Call one MCP tool and return its decoded payload. Raises McpError on failure."""
-        await self._ensure_session()
-        self._next_id += 1
-        r = await self._client.post(
-            self._url,
-            headers=self._headers(),
-            json={"jsonrpc": "2.0", "id": self._next_id, "method": "tools/call",
-                  "params": {"name": name, "arguments": arguments}},
-        )
-        r.raise_for_status()
+        r = await self._post_tool_call(name, arguments)
+        if r.status_code == 404 and self._session_id:
+            # The server forgot our session — it was restarted or redeployed. The MCP
+            # spec answers 404 for an unknown session id; the fix is a new handshake.
+            self._session_id = None
+            r = await self._post_tool_call(name, arguments)
+        _check_http(r)
         msg = _parse_body(r.text)
         if "error" in msg:
             raise McpError(msg["error"].get("message", "MCP transport error"),
                            code="RPC_ERROR", raw=msg["error"])
         return _unwrap(name, msg["result"])
+
+    async def _post_tool_call(self, name: str, arguments: dict) -> httpx.Response:
+        await self._ensure_session()
+        self._next_id += 1
+        return await self._client.post(
+            self._url,
+            headers=self._headers(),
+            json={"jsonrpc": "2.0", "id": self._next_id, "method": "tools/call",
+                  "params": {"name": name, "arguments": arguments}},
+        )
 
 
 def _unwrap(name: str, result: dict) -> dict:

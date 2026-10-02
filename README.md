@@ -44,7 +44,9 @@ uv pip install --python .venv/bin/python -r requirements.txt
 .venv/bin/python -m uvicorn src.main:app --reload
 ```
 
-Open <http://127.0.0.1:8000>.
+Open <http://localhost:8000> — use `localhost`, not the `127.0.0.1` address Uvicorn
+prints. Google sign-in only allows the domains on the Firebase project's list, and
+`localhost` is on it by default; `127.0.0.1` is not.
 
 ## Checkpoint 0 — did you receive the MCP key?
 
@@ -198,10 +200,16 @@ export AISUM_TEAM_KEY="<your MCP key>"
 claude
 ```
 
+The first time, Claude Code asks whether to use the MCP servers in this project's
+`.mcp.json`. Approve `aisum`. Until you do, `claude mcp list` shows it as
+`Pending approval`.
+
 **It is working when:** running `/mcp` inside Claude Code lists the `aisum` server as
 connected with its tools, and asking *"search for a warm camping jacket with the aisum
-tools"* returns products. If `aisum` shows as failed with a 401, `AISUM_TEAM_KEY` is
-not set in the shell you started `claude` from.
+tools"* returns products.
+
+If you see `Missing environment variables: AISUM_TEAM_KEY`, the key is not exported
+in the shell you started `claude` from — export it and start `claude` again.
 
 Settings apply to the folder you start `claude` in. Started anywhere else, Claude Code
 uses your own account instead of the gateway.
@@ -231,6 +239,19 @@ How to recognise it: `content == ""` **and** `finish_reason == "length"`.
 - Leave `max_tokens` out (as `src/llm_client.py` does), or set it to 1024 or more.
 - It depends on the prompt: easy questions finish their thinking quickly and answer
   even with a small limit, so the bug looks random. It is not — it is the limit.
+
+### Sign-in shows `auth/unauthorized-domain`
+
+The page's address is not on the Firebase project's list of allowed sign-in domains.
+Locally, open `http://localhost:8000` instead of `http://127.0.0.1:8000`. On Cloud
+Run, see checkpoint 4.
+
+### Image search fails with `INTERNAL_ERROR: task failed before producing a result`
+
+Most often the image is too large. The same photo failed as a 2.4 MB original and
+worked as a 325 KB resize. Send a web-sized image (around 1000 px wide); many image
+hosts resize through the URL, for example `?w=1080` on Unsplash. The error text does
+not mention size, so check this first.
 
 ### `401` from MCP or the LLM gateway
 
