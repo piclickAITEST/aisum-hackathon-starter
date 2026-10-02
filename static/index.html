@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AISUM Hackathon Starter Kit</title>
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body class="gated">
+<div class="wrap">
+
+  <div class="bar">
+    <h1>AISUM Hackathon Starter Kit</h1>
+    <div>
+      <span id="whoami" hidden></span>
+      <button id="signin">Sign in with Google</button>
+      <button id="signout" hidden>Sign out</button>
+    </div>
+  </div>
+
+  <!-- Required notice — do not remove without reading README §"고지 문구". -->
+  <p class="notice">
+    Signing in creates an account in a Google Cloud project operated by AISUM for
+    AISUM Hackathon 2026.
+  </p>
+
+  <div id="gate">
+    <p>Sign in to use this example.</p>
+    <button id="gate-signin" class="primary">Sign in with Google</button>
+    <p id="gate-err" class="err" hidden></p>
+  </div>
+
+  <main id="app">
+    <p id="autherr" class="err" hidden></p>
+
+    <section class="panel">
+      <h2>1. Text search — <code>search_products_by_text</code></h2>
+      <p class="hint">One call, fast. Try: "a warm jacket for autumn camping"</p>
+      <div class="row">
+        <input type="text" id="text-query" value="a warm jacket for autumn camping">
+        <button id="text-run" class="primary">Search</button>
+      </div>
+      <div class="status" id="text-status"></div>
+      <pre class="result" id="text-result" hidden></pre>
+    </section>
+
+    <section class="panel">
+      <h2>2. Image search — <code>search_products_by_image</code></h2>
+      <p class="hint">One call, but slower — the server detects items in the photo first.</p>
+      <div class="row">
+        <input type="url" id="image-url"
+               value="https://images.unsplash.com/photo-1551028719-00167b16eac5">
+        <button id="image-run" class="primary">Search</button>
+      </div>
+      <div class="status" id="image-status"></div>
+      <pre class="result" id="image-result" hidden></pre>
+    </section>
+
+    <section class="panel">
+      <h2>3. Scene match — <code>start_scene_match</code> → <code>get_scene_match_result</code></h2>
+      <p class="hint">
+        Two steps. This starts the job, gets a <code>task_id</code>, then polls
+        <code>/api/scene/result/&lt;task_id&gt;</code> with that SAME id until it's done —
+        this is the pattern <code>start_video_match</code> also uses.
+      </p>
+      <div class="row">
+        <input type="text" id="scene-title" value="camping trip, cold evenings">
+        <input type="url" id="scene-image"
+               value="https://images.unsplash.com/photo-1504280390367-361c6d9f38f4">
+        <button id="scene-run" class="primary">Start</button>
+      </div>
+      <div class="status" id="scene-status"></div>
+      <pre class="result" id="scene-result" hidden></pre>
+    </section>
+
+    <section class="panel">
+      <h2>4. LLM gateway check — one <code>/chat/completions</code> call</h2>
+      <p class="hint">
+        No agent loop here — just proof the gateway call works. What to do with the
+        model's answer is up to you.
+      </p>
+      <div class="row">
+        <input type="text" id="llm-prompt" value="Say hello in one short sentence.">
+        <button id="llm-run" class="primary">Check LLM connection</button>
+      </div>
+      <div class="status" id="llm-status"></div>
+      <pre class="result" id="llm-result" hidden></pre>
+    </section>
+  </main>
+</div>
+
+<script type="module" src="/static/auth.js"></script>
+<script src="/static/app.js"></script>
+</body>
+</html>
