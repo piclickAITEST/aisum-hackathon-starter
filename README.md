@@ -13,20 +13,28 @@ or memory system here. Build those parts yourself.
 
 ## Before you start
 
-You need the values in `.env` from the hackathon organizers:
+The organizers give your team two keys and one Firebase project:
 
-- `MCP_API_KEY`: the team key for AISUM MCP
-- `OPENAI_API_KEY`: the team key for the LLM gateway
+- **MCP key** — for the AISUM product tools at `https://acts.aedi.ai/mcp`
+- **LLM key** — for the LLM gateway at `https://acts.aedi.ai/llm`. The same key is
+  used by this app and by Claude Code.
 - the Firebase web configuration for your team's Firebase project
 
-Copy the template and fill it in:
+Copy the template and fill in the two keys and the six `FIREBASE_*` values. The URLs
+and model name are already correct:
 
 ```bash
 cp .env.example .env
 ```
 
-`MCP_API_KEY` and `OPENAI_API_KEY` are secrets. Keep `.env` local. Never put either
-key in source code, `.env.example`, GitHub, or a browser request.
+| `.env` variable | What goes there |
+|---|---|
+| `MCP_API_KEY` | MCP key |
+| `OPENAI_API_KEY` | LLM key |
+| `FIREBASE_*` | Firebase console → Project settings → General → Your apps → SDK setup and configuration → Config |
+
+Both keys are secrets. Keep `.env` local. Never put either key in source code,
+`.env.example`, GitHub, or a browser request.
 
 Install and run locally:
 
@@ -40,9 +48,11 @@ Open <http://127.0.0.1:8000>.
 
 ## Checkpoint 0 — did you receive the MCP key?
 
-Run:
+Load `.env` into your shell first (the commands below and in checkpoint 3 read from
+it), then run:
 
 ```bash
+set -a; . ./.env; set +a
 curl -s https://acts.aedi.ai/status \
   -H "Authorization: Bearer $MCP_API_KEY"
 ```
@@ -121,30 +131,34 @@ Do not remove it without understanding the participant notice requirements.
 The project must listen on the port Cloud Run gives it and bind to `0.0.0.0`. The
 included `Procfile` does both through Uvicorn.
 
-The verified billing-enabled test project is `molten-amulet-471104-r0`, using the
-`personal` gcloud configuration. Do not activate that configuration globally: another
-terminal may be using the company `default` configuration.
-
-First make sure your deployment environment has the values from `.env` available. Then
-run the deploy command with the configuration on **this command only**:
+You need the Google Cloud CLI (`gcloud`), or use Cloud Shell in the browser where it
+is already installed. Sign in once and select your team's project:
 
 ```bash
-export PATH="$HOME/tools/google-cloud-sdk/bin:$PATH"
-CLOUDSDK_ACTIVE_CONFIG_NAME=personal gcloud run deploy aisum-hackathon-starter \
-  --source . \
-  --project molten-amulet-471104-r0 \
-  --region us-central1 \
-  --allow-unauthenticated \
-  --set-env-vars "MCP_URL=$MCP_URL,MCP_API_KEY=$MCP_API_KEY,OPENAI_BASE_URL=$OPENAI_BASE_URL,OPENAI_API_KEY=$OPENAI_API_KEY,MODEL=$MODEL,FIREBASE_API_KEY=$FIREBASE_API_KEY,FIREBASE_AUTH_DOMAIN=$FIREBASE_AUTH_DOMAIN,FIREBASE_PROJECT_ID=$FIREBASE_PROJECT_ID,FIREBASE_STORAGE_BUCKET=$FIREBASE_STORAGE_BUCKET,FIREBASE_MESSAGING_SENDER_ID=$FIREBASE_MESSAGING_SENDER_ID,FIREBASE_APP_ID=$FIREBASE_APP_ID"
+gcloud auth login
+gcloud config set project <your-team-project-id>
 ```
 
-**It is working when:** `gcloud` prints a Cloud Run URL and opening that URL shows the
-starter page. `--allow-unauthenticated` is required so Firebase can handle sign-in and
-the page can load before a user has authenticated with Cloud Run.
+Cloud Run does not read `.env`. Turn it into `env.yaml` (ignored by git, and not
+uploaded with the source), then deploy with that file. This keeps the keys out of
+your shell history:
 
-For a real team deployment, use the project and billing setup provided by the
-organizers. Do not deploy hackathon apps into a company project that has not been
-prepared for it.
+```bash
+grep -E '^[A-Z_]+=' .env | sed -E 's/^([A-Z_]+)=(.*)$/\1: "\2"/' > env.yaml
+
+gcloud run deploy app \
+  --source . \
+  --region us-central1 \
+  --allow-unauthenticated \
+  --env-vars-file env.yaml
+```
+
+**It is working when:** `gcloud` prints a `Service URL: https://...run.app` line and
+opening that URL shows the starter page with the sign-in button.
+
+`--allow-unauthenticated` is required. Without it the URL answers `403 Forbidden` —
+the deploy succeeded, but Cloud Run refuses anyone who is not signed in to your Google
+Cloud project, which includes every user of your app.
 
 ## Checkpoint 4 — does the deployed copy work?
 
@@ -153,45 +167,76 @@ On the Cloud Run URL, repeat checkpoint 1, checkpoint 1-1, and checkpoint 2.
 **It is working when:** the deployed copy can sign in, call text/image/scene MCP, and
 return one LLM response just like localhost.
 
-If sign-in fails only after deployment with `auth/unauthorized-domain`, add the Cloud
-Run domain to the Firebase project's authorized domains. Localhost is normally already
-allowed; a new deployed domain is not.
+If sign-in works on localhost but the deployed page shows `auth/unauthorized-domain`,
+the new `run.app` address is not yet on the Firebase project's list of allowed sign-in
+domains. AISUM owns the Firebase projects and adds deployed addresses for you; if the
+error is still there some time after your first deploy, tell the organizers the URL.
 
 ## Claude Code setup
 
-The app runtime and your coding agent are two separate connections. The repository
-includes `.mcp.json` for the MCP tools and `.claude/settings.example.json` plus
-`.claude/settings.local.json.example` for the coding-agent settings.
+Open this folder in Claude Code (the CLI, or the VS Code extension) and it is already
+pointed at the AISUM gateway and the AISUM product tools. You add two keys.
 
-Copy the two Claude Code templates after the organizers give you the real coding
-Gateway host, model name, and coding key:
+| File | Committed? | What it does |
+|---|---|---|
+| `.claude/settings.json` | yes | Gateway address and model. Not secret — leave it as is |
+| `.claude/settings.local.json` | **no** (ignored) | Your LLM key. You create it |
+| `.mcp.json` | yes | Connects the AISUM MCP tools. Reads the MCP key from your shell |
+
+Create the local settings file and put your **LLM key** in it:
 
 ```bash
-cp .claude/settings.example.json .claude/settings.json
 cp .claude/settings.local.json.example .claude/settings.local.json
-# edit the three placeholders in settings.json and the key in settings.local.json
+# replace "replace-with-your-LLM-key" with your LLM key
 ```
 
-Do not commit either copied live file. `.gitignore` excludes them because they may
-contain internal URLs and credentials. The settings template deliberately uses
-placeholders: Claude Code reads `settings.json` as a live configuration, so an
-unusable placeholder URL or model would make the session fail rather than merely
-explain what to do.
-
-### Claude Code MCP connection
-
+Export your **MCP key** under the name `.mcp.json` expects, then start Claude Code
+from this folder:
 
 ```bash
-export AISUM_TEAM_KEY="$MCP_API_KEY"
+export AISUM_TEAM_KEY="<your MCP key>"
 claude
 ```
 
-The committed `.mcp.json` uses `${AISUM_TEAM_KEY}` expansion. The key itself is never
-in that file. A custom variable name is intentional: do not rename it to a provider
-credential variable such as `ANTHROPIC_API_KEY`.
+**It is working when:** running `/mcp` inside Claude Code lists the `aisum` server as
+connected with its tools, and asking *"search for a warm camping jacket with the aisum
+tools"* returns products. If `aisum` shows as failed with a 401, `AISUM_TEAM_KEY` is
+not set in the shell you started `claude` from.
 
-The configuration is for Claude Code. Cursor and Windsurf use different configuration
-formats; add those separately if your team needs them.
+Settings apply to the folder you start `claude` in. Started anywhere else, Claude Code
+uses your own account instead of the gateway.
+
+Cursor and Windsurf use different configuration formats; add those separately if
+your team needs them.
+
+## FAQ
+
+### The LLM returned `200 OK` but the text is empty
+
+The model (`deepseek-v4.1-flash`) is a reasoning model: it thinks before it answers,
+and `max_tokens` caps **thinking and answer together**. If `max_tokens` is small, the
+thinking can use all of it and nothing is left for the answer:
+
+```text
+request   max_tokens: 20, a question that needs some reasoning
+response  HTTP 200
+          choices[0].message.content   ""        <- empty, but not an error
+          choices[0].finish_reason     "length"
+          usage.completion_tokens      20
+```
+
+How to recognise it: `content == ""` **and** `finish_reason == "length"`.
+
+- **Do not retry.** The same request comes back empty again.
+- Leave `max_tokens` out (as `src/llm_client.py` does), or set it to 1024 or more.
+- It depends on the prompt: easy questions finish their thinking quickly and answer
+  even with a small limit, so the bug looks random. It is not — it is the limit.
+
+### `401` from MCP or the LLM gateway
+
+Each service has its own key. `401` from `/status` or a search button means the MCP
+key; an error from **Check LLM connection** means the LLM key or base URL. Putting one
+key in the other's place is the most common cause.
 
 ## File map
 
@@ -208,9 +253,6 @@ static/app.js       four buttons, including the visible scene polling loop
 
 Before committing, confirm that the following are true:
 
-- `.env` is ignored and not staged.
+- `.env`, `env.yaml` and `.claude/settings.local.json` are ignored and not staged.
 - No MCP or LLM key appears in a file, URL, log, screenshot, or commit.
-- Only the public MCP hostname `acts.aedi.ai` appears; do not publish internal hosts or
-  IP addresses.
-- Do not publish internal tool names or server implementation details.
 - The Firebase web config may be visible; Firebase service-account credentials must not.

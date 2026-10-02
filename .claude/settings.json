@@ -1,0 +1,8 @@
+{
+  "env": {
+    "ANTHROPIC_BASE_URL": "https://acts.aedi.ai/llm",
+    "ANTHROPIC_MODEL": "deepseek-v4.1-flash-claude",
+    "ANTHROPIC_SMALL_FAST_MODEL": "deepseek-v4.1-flash-claude",
+    "CLAUDE_CODE_MAX_CONTEXT_TOKENS": "1048576"
+  }
+}

@@ -4,7 +4,7 @@ __pycache__/
 .venv/
 .pytest_cache/
 
-# Live Claude Code settings may contain internal URLs or credentials.
-.claude/settings.json
+# settings.json 은 커밋한다 — 공개 HTTPS 주소와 모델명뿐이고 비밀이 아니다.
+# 키는 settings.local.json 에만 둔다.
 .claude/settings.local.json
-.claude/settings*.gateway.json
+env.yaml
