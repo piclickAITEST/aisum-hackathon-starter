@@ -45,8 +45,11 @@ def _check_http(r: httpx.Response) -> None:
     """
     if r.is_success:
         return
-    hint = (" — check MCP_API_KEY (this is the MCP key, not the LLM key)"
-            if r.status_code in (401, 403) else " — check MCP_URL")
+    # Only 401 means the key. A 403 comes from in front of the server (network
+    # access), and sending someone to re-check a correct key wastes their afternoon.
+    hint = {401: " — check MCP_API_KEY (this is the MCP key, not the LLM key)",
+            403: " — the server refused this network; tell the organizers"
+            }.get(r.status_code, " — check MCP_URL")
     raise McpError(f"MCP server answered HTTP {r.status_code}{hint}",
                    code=f"HTTP_{r.status_code}", raw=r.text[:500])
 
