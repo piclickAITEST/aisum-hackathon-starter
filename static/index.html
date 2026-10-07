@@ -29,8 +29,19 @@
     <li data-step="deploy">Deploy</li>
   </ol>
 
+  <!-- Required notice, short form — on screen while signed in, where people type. -->
+  <p class="notice-line">What you type into this app is sent to AISUM's services and is
+    recorded there.</p>
+
   <section id="gate" class="card gate">
     <button id="gate-signin" class="primary">Sign in with Google</button>
+    <!-- Required notice — do not remove without reading docs/setup.md, checkpoint 1.
+         Right under the sign-in button, so it is on screen when people sign in. -->
+    <p class="notice-consent">
+      Signing in creates an account in a Google Cloud project operated by AISUM for
+      AISUM Hackathon 2026. What you type into this app is sent to AISUM's services to
+      produce results, and is recorded there.
+    </p>
     <p id="gate-err" class="err" hidden></p>
 
     <h2>What you'll check</h2>
@@ -170,8 +181,8 @@
     </section>
   </main>
 
-  <!-- Required notice — do not remove without reading docs/setup.md, checkpoint 1.
-       Shown before and after sign-in, on every page state. -->
+  <!-- Required notice, full text — do not remove without reading docs/setup.md,
+       checkpoint 1. Shown after sign-in; before sign-in the copy under the button is. -->
   <footer class="notice">
     Signing in creates an account in a Google Cloud project operated by AISUM for
     AISUM Hackathon 2026. What you type into this app is sent to AISUM's services to

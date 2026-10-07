@@ -57,7 +57,12 @@ the pilot project to a company project or your team's project, change the six
 The page includes this user notice intentionally:
 
 > Signing in creates an account in a Google Cloud project operated by AISUM for AISUM
-> Hackathon 2026.
+> Hackathon 2026. What you type into this app is sent to AISUM's services to produce
+> results, and is recorded there.
+
+Keep it next to your sign-in control, and keep it visible wherever users type. This
+page does both: the full notice sits under the sign-in button, and once signed in, a
+short line under the progress strip and the full text at the bottom.
 
 Do not remove it without understanding the participant notice requirements.
 
