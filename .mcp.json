@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "aisum": {
+      "type": "http",
+      "url": "https://acts.aedi.ai/mcp",
+      "headers": { "Authorization": "Bearer ${AISUM_TEAM_KEY}" }
+    }
+  }
+}

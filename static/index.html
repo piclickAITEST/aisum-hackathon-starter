@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AISUM Hackathon Starter Kit</title>
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body class="gated">
+<div class="wrap">
+
+  <header class="top">
+    <div>
+      <h1>AISUM Hackathon Starter Kit</h1>
+      <p class="lede">Check that your keys, sign-in and tools are wired — then build your own app on top.</p>
+    </div>
+    <div class="who">
+      <span id="whoami" hidden></span>
+      <button id="signout" hidden>Sign out</button>
+    </div>
+  </header>
+
+  <!-- Lights up as each check passes in this browser session. Same order as the README. -->
+  <ol class="progress" id="progress">
+    <li data-step="signin">Sign in</li>
+    <li data-step="mcp">MCP tools</li>
+    <li data-step="llm">LLM</li>
+    <li data-step="toolcall">One tool call</li>
+    <li data-step="deploy">Deploy</li>
+  </ol>
+
+  <section id="gate" class="card gate">
+    <button id="gate-signin" class="primary">Sign in with Google</button>
+    <p id="gate-err" class="err" hidden></p>
+
+    <h2>What you'll check</h2>
+    <dl class="check">
+      <dt>Sign-in</dt>
+      <dd>Google accounts in an AISUM-operated project. Your user count for judging comes
+        from here.</dd>
+      <dt>Product tools (MCP)</dt>
+      <dd>Turn a sentence, a photo, a scene or a YouTube video into products people can
+        buy. You run all four here; the participant docs cover every option.</dd>
+      <dt>LLM gateway</dt>
+      <dd>The model your app talks to. One call to prove your key works, then one round
+        trip where the model uses a product tool by itself.</dd>
+      <dt>Deploy</dt>
+      <dd>This same page on Cloud Run — see docs/deploy.md.</dd>
+    </dl>
+  </section>
+
+  <main id="app">
+    <p id="autherr" class="err" hidden></p>
+
+    <h2 class="group">Product tools (MCP)</h2>
+
+    <section class="card step">
+      <div class="step-head">
+        <div><h3>Text search</h3><code class="tool">search_products_by_text</code></div>
+        <span class="tag">instant</span>
+      </div>
+      <p class="hint">A sentence or a whole article in, matching products out, ranked.
+        One call.</p>
+      <div class="row">
+        <input type="text" id="text-query" value="a warm jacket for autumn camping">
+        <button id="text-run" class="run">Run</button>
+      </div>
+      <p class="status" id="text-status"></p>
+      <details class="raw" id="text-raw" hidden><summary>Raw JSON</summary>
+        <pre class="result" id="text-result"></pre></details>
+    </section>
+
+    <section class="card step">
+      <div class="step-head">
+        <div><h3>Image search</h3><code class="tool">search_products_by_image</code></div>
+        <span class="tag">a few seconds</span>
+      </div>
+      <p class="hint">A photo in; the items found in it, each with its own matches — so one
+        photo can return several groups. One call.</p>
+      <div class="row">
+        <input type="url" id="image-url"
+               value="https://images.unsplash.com/photo-1529399447871-731cff7f696b?w=1080">
+        <button id="image-run" class="run">Run</button>
+      </div>
+      <p class="status" id="image-status"></p>
+      <details class="raw" id="image-raw" hidden><summary>Raw JSON</summary>
+        <pre class="result" id="image-result"></pre></details>
+    </section>
+
+    <section class="card step">
+      <div class="step-head">
+        <div><h3>Scene match</h3>
+          <code class="tool">start_scene_match → get_scene_match_result</code></div>
+        <span class="tag">longer</span>
+      </div>
+      <p class="hint">A photo plus what is going on in; products that fit the situation out.
+        Two steps: start the job once, get a <code>task_id</code>, then ask again with that
+        same id until it is done.</p>
+      <div class="row">
+        <input type="text" id="scene-title" value="planning a beach day next weekend">
+        <input type="url" id="scene-image"
+               value="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1080">
+        <button id="scene-run" class="run">Run</button>
+      </div>
+      <p class="status" id="scene-status"></p>
+      <details class="raw" id="scene-raw" hidden><summary>Raw JSON</summary>
+        <pre class="result" id="scene-result"></pre></details>
+    </section>
+
+    <section class="card step">
+      <div class="step-head">
+        <div><h3>Video match</h3>
+          <code class="tool">start_video_match → get_video_match_result</code></div>
+        <span class="tag">seconds to minutes</span>
+      </div>
+      <p class="hint">A YouTube URL in; products for each moment of the video, with
+        timestamps. The same two steps as scene match. A video that has been run before
+        comes back in seconds; a new one takes minutes.</p>
+      <div class="row">
+        <input type="url" id="video-url" value="https://www.youtube.com/watch?v=8TPh4JQlCqQ">
+        <button id="video-run" class="run">Run</button>
+      </div>
+      <p class="status" id="video-status"></p>
+      <details class="raw" id="video-raw" hidden><summary>Raw JSON</summary>
+        <pre class="result" id="video-result"></pre></details>
+    </section>
+
+    <h2 class="group">LLM gateway</h2>
+
+    <section class="card step">
+      <div class="step-head">
+        <div><h3>One model call</h3><code class="tool">/chat/completions</code></div>
+      </div>
+      <p class="hint">Proof the gateway call works. What to do with the answer is up to you.</p>
+      <div class="row">
+        <input type="text" id="llm-prompt" value="Say hello in one short sentence.">
+        <button id="llm-run" class="run">Run</button>
+      </div>
+      <p class="status" id="llm-status"></p>
+      <pre class="result" id="llm-result" hidden></pre>
+    </section>
+
+    <section class="card step">
+      <div class="step-head">
+        <div><h3>One tool call, end to end</h3>
+          <code class="tool">model → app → MCP → model</code></div>
+      </div>
+      <p class="hint">One round trip — no loop, no memory, one tool.
+        When to call again, which tool, and what to remember is yours to design.</p>
+      <div class="row">
+        <input type="text" id="tc-question"
+               value="Find me a warm jacket for autumn camping under $80.">
+        <button id="tc-run" class="run">Run</button>
+      </div>
+      <p class="status" id="tc-status"></p>
+      <ol class="flow" id="tc-steps" hidden>
+        <li><details open><summary><span class="who-acts">model</span>
+            Asks for a tool call <span class="secs" id="tc-s1-secs"></span></summary>
+            <pre class="result" id="tc-s1"></pre></details></li>
+        <li><details><summary><span class="who-acts">app → MCP</span>
+            Runs the call <span class="secs" id="tc-s2-secs"></span></summary>
+            <pre class="result" id="tc-s2"></pre></details></li>
+        <li><details><summary><span class="who-acts">app → model</span>
+            Sends the result back</summary>
+            <pre class="result" id="tc-s3"></pre></details></li>
+        <li><details open><summary><span class="who-acts">model</span>
+            Answers <span class="secs" id="tc-s4-secs"></span></summary>
+            <pre class="result" id="tc-s4"></pre></details></li>
+      </ol>
+    </section>
+  </main>
+
+  <!-- Required notice — do not remove without reading docs/setup.md, checkpoint 1.
+       Shown before and after sign-in, on every page state. -->
+  <footer class="notice">
+    Signing in creates an account in a Google Cloud project operated by AISUM for
+    AISUM Hackathon 2026.
+  </footer>
+</div>
+
+<!-- auth.js loads first but sets window.__auth last (after a fetch); app.js reads it on click. -->
+<script type="module" src="/static/auth.js"></script>
+<script type="module" src="/static/app.js"></script>
+</body>
+</html>
