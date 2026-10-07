@@ -68,6 +68,7 @@ code { font-family: var(--mono); font-size: .9em; }
           font-size: 14px; color: var(--text); }
 .notice-consent { margin: 12px 0 0; font-size: 14px; color: var(--text); max-width: 60ch; }
 .notice-line { margin: -12px 0 20px; font-size: 14px; color: var(--text); }
+.notice a, .notice-consent a, .notice-line a { color: var(--muted); }
 /* One copy of the full notice per state: under the button before sign-in, the
    footer after. The short line is for signed-in users only. */
 body.gated .notice, body.gated .notice-line { display: none; }
