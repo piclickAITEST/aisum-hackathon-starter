@@ -16,7 +16,8 @@
       "Bash(uv pip *)",
       "Bash(pwvenv/bin/python -c 'import playwright, importlib.metadata as m; print\\(\"playwright\", m.version\\(\"playwright\"\\)\\)')",
       "Bash(curl -s -o /dev/null localhost:8011/)",
-      "Bash(timeout 1200 pwvenv/bin/python notice_check.py)"
+      "Bash(timeout 1200 pwvenv/bin/python notice_check.py)",
+      "Bash(curl -sL --max-time 20 https://aisum-hackathon.web.app/privacy)"
     ]
   }
 }

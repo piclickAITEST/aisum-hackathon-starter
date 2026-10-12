@@ -59,7 +59,7 @@ The page includes this user notice intentionally:
 > Built for AISUM Hackathon 2026. Signing in creates an account in a Google Cloud
 > project AISUM operates. Your searches are sent to AISUM's services to produce results
 > and are logged there against this app, not against your account.
-> [Privacy notice](https://aisum-hackathon-tango.web.app/privacy)
+> [Privacy notice](https://aisum-hackathon.web.app/privacy)
 
 Keep it next to your sign-in control, keep the link, and keep it visible wherever users
 type. This page does both: the full notice sits under the sign-in button, and once
