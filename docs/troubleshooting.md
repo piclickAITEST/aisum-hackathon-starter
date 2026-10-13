@@ -80,9 +80,9 @@ How to recognise it: `content == ""` **and** `finish_reason == "length"`.
 - It depends on the prompt: easy questions finish their thinking quickly and answer
   even with a small limit, so the bug looks random. It is not — it is the limit.
 
-## Image search fails with `INTERNAL_ERROR: task failed before producing a result`
+## Image search fails with `INTERNAL_ERROR: Image search failed before producing a result`
 
 Most often the image is too large. The same photo failed as a 2.4 MB original and
 worked as a 325 KB resize. Send a web-sized image (around 1000 px wide); many image
-hosts resize through the URL, for example `?w=1080` on Unsplash. The error text does
-not mention size, so check this first.
+hosts resize through the URL, for example `?w=1080` on Unsplash. The other usual
+cause is a link the server cannot download, so open the URL in a private window too.
