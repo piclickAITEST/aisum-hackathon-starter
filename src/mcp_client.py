@@ -12,6 +12,7 @@ Every request carries the team key on Authorization: Bearer <key>. The public
 endpoint (acts.aedi.ai) rejects everything without it.
 """
 import json
+import re
 from typing import Any
 
 import httpx
@@ -21,6 +22,7 @@ from .config import MCP_API_KEY, MCP_URL
 _ACCEPT = "application/json, text/event-stream"
 _PROTOCOL_VERSION = "2025-06-18"
 _TIMEOUT = 60.0
+_CODE = re.compile(r"[A-Z][A-Z_]+")
 
 
 class McpError(RuntimeError):
@@ -148,21 +150,20 @@ class McpClient:
 def _unwrap(name: str, result: dict) -> dict:
     """Normalise the server's three different failure envelopes into one exception.
 
-    Failures arrive as (a) isError=true with a bare `CODE: message` string,
-    (b) isError=false with a JSON body whose top level is `error`, and (c)
-    isError=false with `status: "failed"` plus a nested `error`. Checking only
-    `isError` lets (b) and (c) through as empty results.
+    Failures arrive as (a) a bare `CODE: message` string, (b) a JSON body whose
+    top level is `error`, and (c) a JSON body with `status: "failed"` plus a
+    nested `error`. Read the body first and `isError` second: the flag says that
+    the call failed, the body says why, and `error.code` is what tells you
+    whether calling again can help.
     """
     text = "".join(c.get("text", "") for c in result.get("content", []))
-    # Before parsing: shape (a) is usually not JSON at all.
-    if result.get("isError"):
-        raise McpError(text.strip() or "The tool reported an error.",
-                       code="TOOL_ERROR", raw=text)
     try:
         payload = json.loads(text)
     except json.JSONDecodeError:
-        raise McpError(f"MCP returned a result that is not JSON: {text[:200]!r}",
-                       code="BAD_RESPONSE", raw=text)
+        payload = None
+        if not result.get("isError"):
+            raise McpError(f"MCP returned a result that is not JSON: {text[:200]!r}",
+                           code="BAD_RESPONSE", raw=text)
     if isinstance(payload, dict) and isinstance(payload.get("error"), dict):
         err = payload["error"]
         raise McpError(err.get("message", "unknown error"),
@@ -171,4 +172,11 @@ def _unwrap(name: str, result: dict) -> dict:
         err = payload.get("error") or {}
         raise McpError(err.get("message", "The task failed."),
                        code=err.get("code", "FAILED"), raw=payload)
+    if result.get("isError"):
+        # Shape (a). The code is the word before the first colon, when there is one.
+        code, sep, message = text.strip().partition(": ")
+        if sep and _CODE.fullmatch(code):
+            raise McpError(message, code=code, raw=text)
+        raise McpError(text.strip() or "The tool reported an error.",
+                       code="TOOL_ERROR", raw=text)
     return payload
