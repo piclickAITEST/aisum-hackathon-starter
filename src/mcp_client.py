@@ -26,7 +26,7 @@ _CODE = re.compile(r"[A-Z][A-Z_]+")
 
 
 class McpError(RuntimeError):
-    """A tool call that came back as a failure, in any of the server's three shapes."""
+    """A tool call that came back as a failure."""
 
     def __init__(self, message: str, code: str = "TOOL_ERROR", raw: Any = None):
         super().__init__(message)
@@ -148,13 +148,15 @@ class McpClient:
 
 
 def _unwrap(name: str, result: dict) -> dict:
-    """Normalise the server's three different failure envelopes into one exception.
+    """Turn a failed tool call into one exception that carries `error.code`.
 
-    Failures arrive as (a) a bare `CODE: message` string, (b) a JSON body whose
-    top level is `error`, and (c) a JSON body with `status: "failed"` plus a
-    nested `error`. Read the body first and `isError` second: the flag says that
-    the call failed, the body says why, and `error.code` is what tells you
-    whether calling again can help.
+    A failure sets `isError` and its body is JSON: `{"error": {...}}`, or for a
+    submitted job that failed, `{"status": "failed", "error": {...}}`. Read the
+    body first and `isError` second: the flag says that the call failed, the body
+    says why, and `error.code` is what tells you whether calling again can help.
+
+    A body that is not JSON is still handled, as `CODE: message` or plain text.
+    This server does not send one; another MCP server might.
     """
     text = "".join(c.get("text", "") for c in result.get("content", []))
     try:
@@ -173,7 +175,7 @@ def _unwrap(name: str, result: dict) -> dict:
         raise McpError(err.get("message", "The task failed."),
                        code=err.get("code", "FAILED"), raw=payload)
     if result.get("isError"):
-        # Shape (a). The code is the word before the first colon, when there is one.
+        # Not JSON. The code is the word before the first colon, when there is one.
         code, sep, message = text.strip().partition(": ")
         if sep and _CODE.fullmatch(code):
             raise McpError(message, code=code, raw=text)
