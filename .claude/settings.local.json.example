@@ -1,5 +1,5 @@
 {
   "env": {
-    "ANTHROPIC_AUTH_TOKEN": "replace-with-your-LLM-key"
+    "ANTHROPIC_AUTH_TOKEN": "replace-with-your-Claude-Code-key"
   }
 }

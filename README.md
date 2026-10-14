@@ -46,9 +46,10 @@ receive with your API key lists them.
 
 ## Run it locally
 
-The organizers give your team an **MCP key**, an **LLM key** (used by this app and by
-Claude Code), and a Firebase project. Copy the template and fill in the two keys and
-the six `FIREBASE_*` values — the URLs and model name are already correct:
+The organizers give your team three keys — an **MCP key**, an **LLM key for your app**
+and an **LLM key for Claude Code** — and a Firebase project. Copy the template and fill in
+the MCP key, the app LLM key and the six `FIREBASE_*` values — the URLs and model name are
+already correct. The Claude Code key goes elsewhere, see [docs/claude-code.md](docs/claude-code.md):
 
 ```bash
 cp .env.example .env
@@ -57,10 +58,12 @@ cp .env.example .env
 | `.env` variable | What goes there |
 |---|---|
 | `MCP_API_KEY` | MCP key |
-| `OPENAI_API_KEY` | LLM key |
+| `OPENAI_API_KEY` | LLM key for your app |
 | `FIREBASE_*` | Firebase console → Project settings → General → Your apps → SDK setup and configuration → Config |
 
-Both keys are secrets: keep them in `.env` only. Then install and run.
+All three keys are secrets: keep them in `.env` and `.claude/settings.local.json` only.
+The two LLM keys are not interchangeable — the app key does not work in Claude Code, and
+the Claude Code key does not work in your app. Then install and run.
 
 > **Two versions where commands differ.** macOS and Linux use the first block; Windows
 > uses the **PowerShell** block (not `cmd`). Commands shown once work on both.

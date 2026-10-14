@@ -1,19 +1,21 @@
 # Claude Code setup
 
 Open this folder in Claude Code (the CLI, or the VS Code extension) and it is already
-pointed at the AISUM gateway and the AISUM product tools. You add two keys.
+pointed at the AISUM gateway and the AISUM product tools. You add two keys: the
+**LLM key for Claude Code** and your **MCP key**.
 
 | File | Committed? | What it does |
 |---|---|---|
 | `.claude/settings.json` | yes | Gateway address and model. Not secret — leave it as is |
-| `.claude/settings.local.json` | **no** (ignored) | Your LLM key. You create it |
+| `.claude/settings.local.json` | **no** (ignored) | Your Claude Code LLM key. You create it |
 | `.mcp.json` | yes | Connects the AISUM MCP tools. Reads the MCP key from your shell |
 
-Create the local settings file and put your **LLM key** in it (same on every OS):
+Create the local settings file and put your **Claude Code LLM key** in it (same on every OS). This is not the app key
+from `.env`:
 
 ```bash
 cp .claude/settings.local.json.example .claude/settings.local.json
-# replace "replace-with-your-LLM-key" with your LLM key
+# replace "replace-with-your-Claude-Code-key" with your Claude Code LLM key
 ```
 
 Set your **MCP key** under the name `.mcp.json` expects, then start Claude Code from
