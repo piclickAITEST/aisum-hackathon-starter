@@ -87,6 +87,11 @@ uv pip install --python .venv\Scripts\python.exe -r requirements.txt
 Open <http://localhost:8000> — `localhost`, not the `127.0.0.1` Uvicorn prints;
 Google sign-in only works on `localhost` by default. Sign in first (checkpoint 1).
 
+Type that address into your browser yourself. If you run the app from VS Code's terminal
+and VS Code opens or offers a different address (the Ports tab, a `*.devtunnels.ms` link),
+sign-in fails with `auth/unauthorized-domain` there — those addresses are not on the list.
+Use `localhost`, or run the command from a plain PowerShell / Terminal window instead.
+
 ## Checkpoints — where are you?
 
 | # | Check | It is working when | Details |

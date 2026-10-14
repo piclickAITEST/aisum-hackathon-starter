@@ -15,8 +15,23 @@ import {
 
 const $ = (id) => document.getElementById(id);
 
+// The one sign-in error students actually hit is auth/unauthorized-domain, and what to do
+// about it depends on which address the page was opened at, so say it where it shows up.
+function hint(e) {
+  if (!e || e.code !== 'auth/unauthorized-domain') return '';
+  const host = location.hostname;
+  if (host === 'localhost') return '';
+  if (host.endsWith('.run.app')) {
+    return ` | ${location.host} is not on the sign-in list yet. The organizers add Cloud Run ` +
+           'addresses; if this stays after a while, send them this address.';
+  }
+  return ` | Sign-in is not allowed on ${location.host}. Open http://localhost:8000 in your ` +
+         'browser. 127.0.0.1, and addresses that VS Code port forwarding or a tunnel gives ' +
+         'you, do not work.';
+}
+
 function fail(where, e) {
-  const msg = `auth ${where}: ${e.code || e.message}`;
+  const msg = `auth ${where}: ${e.code || e.message}${hint(e)}`;
   for (const id of ['autherr', 'gate-err']) {
     const el = $(id);
     if (el) { el.hidden = false; el.textContent = msg; }

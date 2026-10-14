@@ -56,8 +56,12 @@ The **One tool call, end to end** card shows a working set of messages to compar
 ## Sign-in shows `auth/unauthorized-domain`
 
 The page's address is not on the Firebase project's list of allowed sign-in domains.
-Locally, open `http://localhost:8000` instead of `http://127.0.0.1:8000`. On Cloud
-Run, see [checkpoint 6](deploy.md#checkpoint-6--the-deployed-copy).
+Locally, open `http://localhost:8000` instead of `http://127.0.0.1:8000`. The same goes
+for any address a tool made for you: VS Code's port forwarding (the Ports tab, or a
+`*.devtunnels.ms` link) and tunnels give the app a different address, and sign-in only
+works on `localhost`. Type `localhost:8000` into the browser yourself, or start the app
+from a plain PowerShell / Terminal window. The error line on the page names the address
+it was opened at. On Cloud Run, see [checkpoint 6](deploy.md#checkpoint-6--the-deployed-copy).
 
 ## The LLM returned `200 OK` but the text is empty
 
