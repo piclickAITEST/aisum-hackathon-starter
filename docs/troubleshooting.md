@@ -24,12 +24,12 @@ Still not found:
 echo 'export PATH="<where you unpacked it>/google-cloud-sdk/bin:$PATH"' >> ~/.zshrc   # or ~/.bashrc
 ```
 
-**Windows (PowerShell)** — add it to your user `PATH` once; it stays after you close the
-terminal. Then open a new PowerShell window.
+**Windows (PowerShell)** — add it to `PATH` for the window you are in. This lasts until
+you close that window, so run it again in each new PowerShell window before using
+`gcloud`:
 
 ```powershell
-$sdk = "$env:LOCALAPPDATA\Google\Cloud SDK\google-cloud-sdk\bin"
-[Environment]::SetEnvironmentVariable("Path", [Environment]::GetEnvironmentVariable("Path", "User") + ";$sdk", "User")
+$env:PATH += ";$env:LOCALAPPDATA\Google\Cloud SDK\google-cloud-sdk\bin"
 ```
 
 If you installed for all users, the folder is under `C:\Program Files (x86)\Google\Cloud SDK`

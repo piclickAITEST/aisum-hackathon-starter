@@ -13,8 +13,8 @@ or use Cloud Shell in the browser where it is already installed.
 **Windows** — run the installer, then:
 
 1. Leave the options that add `gcloud` to your `PATH` checked. If `gcloud` is still not
-   found in a **new** PowerShell window, add it yourself once —
-   [troubleshooting](troubleshooting.md#gcloud-not-found) has the command that keeps it.
+   found in a **new** PowerShell window, add it for that window —
+   [troubleshooting](troubleshooting.md#gcloud-not-found) has the command.
 2. The installer ends by opening `gcloud init`. Sign in with the Google account you gave
    the organizers, and when it asks you to pick a project, choose your **team's
    project** — not "Create a new project" and not a personal one.
