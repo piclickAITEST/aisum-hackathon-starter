@@ -23,9 +23,9 @@ Check with `gcloud --version`. Then sign in and select your team's project (same
 OS; on Windows this repeats what `gcloud init` did, which is fine):
 
 ```bash
-gcloud auth login
-gcloud config set project <your-team-project-id>
-gcloud config get-value project     # should print your team's project
+gcloud auth login                                   # opens a browser: sign in with the account you gave the organizers
+gcloud config set project <your-team-project-id>    # deploy to your team's project from now on
+gcloud config get-value project                     # check: should print your team's project
 ```
 
 If the deploy below fails with `IAM_PERMISSION_DENIED`, see
@@ -40,10 +40,13 @@ folder if you unpacked the SDK somewhere other than your home folder; skip the l
 you installed with Homebrew.
 
 ```bash
+# Make gcloud findable in this terminal
 export PATH="$HOME/google-cloud-sdk/bin:$PATH"
 
+# Copy the settings from .env into env.yaml, the format Cloud Run reads
 grep -E '^[A-Z_]+=' .env | sed -E 's/^([A-Z_]+)=(.*)$/\1: "\2"/' > env.yaml
 
+# Build this folder and run it on Cloud Run as a service called "app"
 gcloud run deploy app \
   --source . \
   --region us-central1 \
@@ -55,17 +58,33 @@ gcloud run deploy app \
 puts `gcloud` on `PATH` for this window; it does no harm if it is already there.
 
 ```powershell
+# Make gcloud findable in this window
 $env:PATH += ";$env:LOCALAPPDATA\Google\Cloud SDK\google-cloud-sdk\bin"
 
+# Copy the settings from .env into env.yaml, the format Cloud Run reads
 Get-Content .env | Where-Object { $_ -match '^[A-Z_]+=' } | ForEach-Object {
   $k, $v = $_ -split '=', 2; "${k}: `"$($v.Trim())`"" } | Set-Content env.yaml
 
+# Build this folder and run it on Cloud Run as a service called "app"
 gcloud run deploy app `
   --source . `
   --region us-central1 `
   --allow-unauthenticated `
   --env-vars-file env.yaml
 ```
+
+What each part of the deploy command does:
+
+| Part | Meaning |
+|---|---|
+| `app` | The service name. It becomes part of your URL; pick another name for a second app |
+| `--source .` | Build from this folder. No Dockerfile needed — the `Procfile` says how to start |
+| `--region us-central1` | Where it runs. Keep the same region every time, or you get a second copy |
+| `--allow-unauthenticated` | Let anyone open the page. Your app still checks Google sign-in for every `/api/*` call |
+| `--env-vars-file env.yaml` | The settings and keys from your `.env`. Not uploaded with the source |
+
+The first deploy may ask to enable APIs or to pick a region — answer `y`. Each later
+deploy replaces the running version at the same URL.
 
 **It is working when:** `gcloud` prints a `Service URL: https://...run.app` line and
 opening that URL shows the starter page with the sign-in button.
