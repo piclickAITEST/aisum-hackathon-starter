@@ -35,9 +35,13 @@ Cloud Run does not read `.env`. Turn it into `env.yaml` (ignored by git, and not
 uploaded with the source), then deploy with that file. This keeps the keys out of
 your shell history.
 
-**macOS / Linux**
+**macOS / Linux** — the first line puts `gcloud` on `PATH` for this terminal. Change the
+folder if you unpacked the SDK somewhere other than your home folder; skip the line if
+you installed with Homebrew.
 
 ```bash
+export PATH="$HOME/google-cloud-sdk/bin:$PATH"
+
 grep -E '^[A-Z_]+=' .env | sed -E 's/^([A-Z_]+)=(.*)$/\1: "\2"/' > env.yaml
 
 gcloud run deploy app \
@@ -47,9 +51,12 @@ gcloud run deploy app \
   --env-vars-file env.yaml
 ```
 
-**Windows (PowerShell)** — the line break is a backtick (`` ` ``), not `\`.
+**Windows (PowerShell)** — the line break is a backtick (`` ` ``), not `\`. The first line
+puts `gcloud` on `PATH` for this window; it does no harm if it is already there.
 
 ```powershell
+$env:PATH += ";$env:LOCALAPPDATA\Google\Cloud SDK\google-cloud-sdk\bin"
+
 Get-Content .env | Where-Object { $_ -match '^[A-Z_]+=' } | ForEach-Object {
   $k, $v = $_ -split '=', 2; "${k}: `"$($v.Trim())`"" } | Set-Content env.yaml
 
