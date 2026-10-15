@@ -124,7 +124,8 @@ async with httpx.AsyncClient(headers={"Authorization": f"Bearer {KEY}"}, timeout
 
 ## Checkpoint 3 — the LLM gateway
 
-Click **Check LLM connection**. This makes exactly one request to:
+In the **LLM gateway** section of the page, click **Run** on the **One model call** card.
+This makes exactly one request from this app to:
 
 ```text
 {OPENAI_BASE_URL}/chat/completions

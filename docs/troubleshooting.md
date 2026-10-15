@@ -24,12 +24,28 @@ Still not found:
 echo 'export PATH="<where you unpacked it>/google-cloud-sdk/bin:$PATH"' >> ~/.zshrc   # or ~/.bashrc
 ```
 
-**Windows (PowerShell)** — re-run the installer and leave *Add to PATH* checked, or for
-the current terminal only:
+**Windows (PowerShell)** — add it to your user `PATH` once; it stays after you close the
+terminal. Then open a new PowerShell window.
 
 ```powershell
-$env:PATH += ";$env:LOCALAPPDATA\Google\Cloud SDK\google-cloud-sdk\bin"
+$sdk = "$env:LOCALAPPDATA\Google\Cloud SDK\google-cloud-sdk\bin"
+[Environment]::SetEnvironmentVariable("Path", [Environment]::GetEnvironmentVariable("Path", "User") + ";$sdk", "User")
 ```
+
+If you installed for all users, the folder is under `C:\Program Files (x86)\Google\Cloud SDK`
+instead — check where `gcloud.cmd` actually is and use that `bin` folder.
+
+## `IAM_PERMISSION_DENIED` when deploying
+
+Your Google account is signed in, but it has not been given permission to deploy to
+that project. Check two things first:
+
+- `gcloud config get-value project` shows your **team's** project, not a personal one
+- `gcloud auth list` shows the **same Google account** you gave the organizers
+
+If both are right, the permission is missing on AISUM's side — you cannot grant it
+yourself. Send the organizers the full error line: it names the permission that was
+refused, and that is what they need to fix it.
 
 ## A `401` — which one?
 
@@ -38,7 +54,7 @@ $env:PATH += ";$env:LOCALAPPDATA\Google\Cloud SDK\google-cloud-sdk\bin"
 | `Sign in first — no Firebase ID token` | You are not signed in on this page |
 | `Firebase ID token rejected: Audience doesn't match` | The token is from a different Firebase project than `FIREBASE_PROJECT_ID` — after switching projects, sign out and in again |
 | `MCP server answered HTTP 401 — check MCP_API_KEY` | The MCP key |
-| `LLM gateway answered HTTP 401 …` on **Check LLM connection** | The LLM key |
+| `LLM gateway answered HTTP 401 …` on the **One model call** card | The LLM key |
 
 Putting one key in the other's place is the most common cause.
 

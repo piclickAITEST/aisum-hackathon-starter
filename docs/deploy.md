@@ -8,15 +8,28 @@ The project must listen on the port Cloud Run gives it and bind to `0.0.0.0`. Th
 included `Procfile` does both through Uvicorn.
 
 You need the Google Cloud CLI (`gcloud`) — [install it](https://cloud.google.com/sdk/docs/install),
-or use Cloud Shell in the browser where it is already installed. Check with
-`gcloud --version`; if it is not found, see
-[troubleshooting](troubleshooting.md#gcloud-not-found). Sign in once and select your
-team's project (same on every OS):
+or use Cloud Shell in the browser where it is already installed.
+
+**Windows** — run the installer, then:
+
+1. Leave the options that add `gcloud` to your `PATH` checked. If `gcloud` is still not
+   found in a **new** PowerShell window, add it yourself once —
+   [troubleshooting](troubleshooting.md#gcloud-not-found) has the command that keeps it.
+2. The installer ends by opening `gcloud init`. Sign in with the Google account you gave
+   the organizers, and when it asks you to pick a project, choose your **team's
+   project** — not "Create a new project" and not a personal one.
+
+Check with `gcloud --version`. Then sign in and select your team's project (same on every
+OS; on Windows this repeats what `gcloud init` did, which is fine):
 
 ```bash
 gcloud auth login
 gcloud config set project <your-team-project-id>
+gcloud config get-value project     # should print your team's project
 ```
+
+If the deploy below fails with `IAM_PERMISSION_DENIED`, see
+[troubleshooting](troubleshooting.md#iam_permission_denied-when-deploying).
 
 Cloud Run does not read `.env`. Turn it into `env.yaml` (ignored by git, and not
 uploaded with the source), then deploy with that file. This keeps the keys out of
