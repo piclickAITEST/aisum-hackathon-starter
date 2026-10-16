@@ -64,12 +64,12 @@ From the kit folder, with `.env` filled in:
 ```
 
 ```text
-Team       your-team
+Team       hackathon-<your team>
 Budget     $…
 Spent      $…   (app key + Claude Code key together)
 Remaining  $…
 
-Models this key can use: …
+Models this key can use: deepseek-v4.1-flash
 MODEL in .env: deepseek-v4.1-flash
 ```
 
@@ -81,19 +81,23 @@ MODEL in .env: deepseek-v4.1-flash
   your key may use; if `MODEL` is not among them, calls fail.
 
 When the budget is used up, every model call is refused with HTTP `429`, and the card
-shows the gateway's message:
+shows the gateway's message followed by `team budget used up — run python -m src.budget`:
 
 ```text
 LLM gateway answered HTTP 429: {"error":{"message":"Budget has been exceeded!
 Team=… Current cost: …, Max budget: …","type":"budget_exceeded",…}}
 ```
 
-Tell the organizers; product searches (MCP) are not affected.
+Product searches (MCP) are not affected.
 
 To show the budget inside your own app, the command makes two read-only calls with
 the LLM key — `GET /llm/key/info` (gives `team_id`) and
 `GET /llm/team/info?team_id=…` (gives `max_budget` and `spend`) — see `src/budget.py`.
 A key can only read its own team.
+
+Your team's LLM budget is $100 for the event and the evaluation period. If real users
+bring you close to the limit, tell us in Slack before it runs out and we'll review
+raising it.
 
 ## A `401` — which one?
 

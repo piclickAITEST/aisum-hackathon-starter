@@ -36,7 +36,9 @@ async def chat(messages: list[dict], tools: list[dict] | None = None,
         )
     if r.is_error:
         # The body says which: an unknown model, a key not allowed that model, a bad
-        # key. The status code alone does not.
-        raise LlmError(f"LLM gateway answered HTTP {r.status_code}: {r.text[:300]}"
-                       " — check OPENAI_BASE_URL / OPENAI_API_KEY / MODEL")
+        # key, or a team budget that is used up. The status code alone does not.
+        hint = ("team budget used up — run python -m src.budget"
+                if r.status_code == 429 and "budget_exceeded" in r.text
+                else "check OPENAI_BASE_URL / OPENAI_API_KEY / MODEL")
+        raise LlmError(f"LLM gateway answered HTTP {r.status_code}: {r.text[:300]} — {hint}")
     return r.json()["choices"][0]
