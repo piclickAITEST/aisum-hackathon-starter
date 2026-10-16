@@ -47,6 +47,54 @@ If both are right, the permission is missing on AISUM's side — you cannot gran
 yourself. Send the organizers the full error line: it names the permission that was
 refused, and that is what they need to fix it.
 
+## How much LLM budget is left?
+
+From the kit folder, with `.env` filled in:
+
+**macOS / Linux**
+
+```bash
+.venv/bin/python -m src.budget
+```
+
+**Windows (PowerShell)**
+
+```powershell
+.venv\Scripts\python.exe -m src.budget
+```
+
+```text
+Team       your-team
+Budget     $…
+Spent      $…   (app key + Claude Code key together)
+Remaining  $…
+
+Models this key can use: …
+MODEL in .env: deepseek-v4.1-flash
+```
+
+- **One budget per team.** Your app's LLM key and your Claude Code key spend from the
+  same budget, so `Spent` is the two together.
+- **Spend lags a little.** It reaches the gateway shortly after each call — usually
+  within a minute — so a call you just made may not be counted yet.
+- **The model name** your app uses is `MODEL` in `.env`. The command lists the models
+  your key may use; if `MODEL` is not among them, calls fail.
+
+When the budget is used up, every model call is refused with HTTP `429`, and the card
+shows the gateway's message:
+
+```text
+LLM gateway answered HTTP 429: {"error":{"message":"Budget has been exceeded!
+Team=… Current cost: …, Max budget: …","type":"budget_exceeded",…}}
+```
+
+Tell the organizers; product searches (MCP) are not affected.
+
+To show the budget inside your own app, the command makes two read-only calls with
+the LLM key — `GET /llm/key/info` (gives `team_id`) and
+`GET /llm/team/info?team_id=…` (gives `max_budget` and `spend`) — see `src/budget.py`.
+A key can only read its own team.
+
 ## A `401` — which one?
 
 | Message | Cause |

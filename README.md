@@ -105,6 +105,7 @@ Use `localhost`, or run the command from a plain PowerShell / Terminal window in
 | 6 | Deployed copy | checkpoints 1–4 work on that URL | [deploy](docs/deploy.md#checkpoint-6--the-deployed-copy) |
 
 Coding with Claude Code against the same tools: [docs/claude-code.md](docs/claude-code.md).
+LLM budget left: `python -m src.budget` — see [troubleshooting](docs/troubleshooting.md#how-much-llm-budget-is-left).
 Something failed: [docs/troubleshooting.md](docs/troubleshooting.md) — search it for the
 exact error text.
 
@@ -115,6 +116,7 @@ src/main.py         start here: every route, in the order of the page
 src/auth.py         checks the Firebase ID token on each /api/* request
 src/mcp_client.py   MCP handshake, session ID, SSE parsing, team-key header, tools/list
 src/llm_client.py   httpx POST to /chat/completions, optionally with tools
+src/budget.py       the team's LLM budget and spend: python -m src.budget
 src/config.py       all settings from .env, including Firebase's six public values
 static/app.js       the six cards, the scene and video polling loop
 static/auth.js      Firebase config fetch and Google sign-in
