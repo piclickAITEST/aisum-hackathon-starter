@@ -11,6 +11,7 @@ or whatever your framework provides.
 Every request carries the team key on Authorization: Bearer <key>. The public
 endpoint (acts.aedi.ai) rejects everything without it.
 """
+import asyncio
 import json
 import re
 from typing import Any
@@ -24,14 +25,21 @@ _PROTOCOL_VERSION = "2025-06-18"
 _TIMEOUT = 60.0
 _CODE = re.compile(r"[A-Z][A-Z_]+")
 
+# RATE_LIMITED carries `retry_after_s`. Wait that long, once, if it is this short;
+# a longer wait means "use a pre-analysed video from docs/videos.md instead".
+SHORT_WAIT_S = 30
+
 
 class McpError(RuntimeError):
     """A tool call that came back as a failure."""
 
-    def __init__(self, message: str, code: str = "TOOL_ERROR", raw: Any = None):
+    def __init__(self, message: str, code: str = "TOOL_ERROR", raw: Any = None,
+                 retry_after_s: int | None = None):
         super().__init__(message)
         self.code = code
         self.raw = raw
+        # Seconds the server asks you to wait. Only on RATE_LIMITED, otherwise None.
+        self.retry_after_s = retry_after_s
 
 
 def _check_http(r: httpx.Response) -> None:
@@ -114,6 +122,20 @@ class McpClient:
         result = await self._rpc("tools/call", {"name": name, "arguments": arguments})
         return _unwrap(name, result)
 
+    async def call_waiting_once(self, name: str, arguments: dict) -> dict:
+        """call(), but a RATE_LIMITED with a short `retry_after_s` is waited out once.
+
+        A long wait is raised as is: do not sit through it, switch to a pre-analysed
+        video. Never loop on RATE_LIMITED — the limit does not change while you wait.
+        """
+        try:
+            return await self.call(name, arguments)
+        except McpError as e:
+            if e.code == "RATE_LIMITED" and e.retry_after_s and e.retry_after_s <= SHORT_WAIT_S:
+                await asyncio.sleep(e.retry_after_s)
+                return await self.call(name, arguments)
+            raise
+
     async def list_tools(self) -> list[dict]:
         """The tools the server offers, each with a JSON Schema for its arguments.
 
@@ -169,7 +191,8 @@ def _unwrap(name: str, result: dict) -> dict:
     if isinstance(payload, dict) and isinstance(payload.get("error"), dict):
         err = payload["error"]
         raise McpError(err.get("message", "unknown error"),
-                       code=err.get("code", "TOOL_ERROR"), raw=payload)
+                       code=err.get("code", "TOOL_ERROR"), raw=payload,
+                       retry_after_s=err.get("retry_after_s"))
     if isinstance(payload, dict) and payload.get("status") == "failed":
         err = payload.get("error") or {}
         raise McpError(err.get("message", "The task failed."),

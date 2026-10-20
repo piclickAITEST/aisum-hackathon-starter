@@ -139,8 +139,12 @@ class VideoStart(BaseModel):
 @app.post("/api/video/start")
 async def video_start(req: VideoStart, uid: str = Depends(require_user)):
     try:
-        return await app.state.mcp.call("start_video_match", req.model_dump())
+        # A new video can be rate limited. Short wait: waited out once. Long wait: raised.
+        return await app.state.mcp.call_waiting_once("start_video_match", req.model_dump())
     except McpError as e:
+        if e.code == "RATE_LIMITED":
+            return _mcp_error(e, hint="New videos are busy. Use a pre-analysed video "
+                                      "from docs/videos.md — those work immediately.")
         return _mcp_error(e)
 
 
