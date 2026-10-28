@@ -122,7 +122,8 @@ class SceneStart(BaseModel):
 @app.post("/api/scene/start")
 async def scene_start(req: SceneStart, uid: str = Depends(require_user)):
     try:
-        return await app.state.mcp.call("start_scene_match", req.model_dump())
+        # Scene requests can be rate limited. A short wait is waited out once; a long one is raised.
+        return await app.state.mcp.call_waiting_once("start_scene_match", req.model_dump())
     except McpError as e:
         return _mcp_error(e)
 
