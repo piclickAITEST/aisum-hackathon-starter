@@ -5,14 +5,14 @@ the AISUM gateway for the model. You add one key: the **LLM key for Claude Code*
 
 Add your **MCP key** too if you want Claude Code to call the AISUM product tools while
 you build. This is optional — your app does not need it; the app uses the keys in
-`.env`. These calls count against the same team limits as your app — go easy before a
-live demo.
+`.env`. These calls count against the same team limits as your app. If Claude Code is
+calling tools while you demo, your app's calls can come back `RATE_LIMITED`.
 
 | File | Committed? | What it does |
 |---|---|---|
 | `.claude/settings.json` | yes | Gateway address and model. Not secret — leave it as is |
 | `.claude/settings.local.json` | **no** (ignored) | Your keys. Read on top of `settings.json`; the same name here wins. You create it |
-| `.mcp.json` | yes | Connects the AISUM MCP tools. Reads `AISUM_TEAM_KEY` from `settings.local.json`. **Don't put the key in `.mcp.json` — it is committed.** |
+| `.mcp.json` | yes | Connects the AISUM MCP tools. Reads `AISUM_TEAM_KEY` from `settings.local.json`. **Don't put the key in `.mcp.json` — git tracks this file, so the key would be pushed with your code.** |
 
 Create the local settings file and put your Claude Code key in it, and your MCP key if
 you want the product tools (same on every OS). The Claude Code key is not the app key
@@ -38,22 +38,16 @@ tools"* returns products.
 read `settings.local.json`, so the warning does not mean the connection is broken.
 `/mcp` inside Claude Code is the real check.
 
-If `/mcp` shows `aisum` as not connected, set the key in the shell instead and start
-`claude` again from that same terminal:
-
-**macOS / Linux**
+If `/mcp` shows `aisum` as not connected, register it for yourself instead — once, for
+this folder on your machine; the key stays in your Claude Code user settings, outside the repo. The same
+line works in a macOS / Linux terminal and in PowerShell:
 
 ```bash
-export AISUM_TEAM_KEY="<your MCP key>"
-claude
+claude mcp add --transport http --scope local aisum https://acts.aedi.ai/mcp --header "Authorization: Bearer <your MCP key>"
 ```
 
-**Windows (PowerShell)**
-
-```powershell
-$env:AISUM_TEAM_KEY = "<your MCP key>"
-claude
-```
+Then start `claude` again. A server added this way takes precedence over the one in
+`.mcp.json`.
 
 Settings apply to the folder you start `claude` in. Started anywhere else, Claude Code
 uses your own account instead of the gateway.
