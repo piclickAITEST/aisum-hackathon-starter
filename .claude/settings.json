@@ -11,13 +11,7 @@
       "Bash(curl -s -o /dev/null localhost:8000/)",
       "Bash(curl -s -o /dev/null -w 'page %{http_code}\\\\n' http://localhost:8000/)",
       "Bash(curl -s http://localhost:8000/)",
-      "Bash(curl -s -o /dev/null -w 'video route \\(no sign-in\\) %{http_code}\\\\n' http://localhost:8000/api/video/start -H 'Content-Type: application/json' -d '{\"video_url\":\"x\"}')",
-      "Bash(rm -rf pwvenv)",
-      "Bash(uv pip *)",
-      "Bash(pwvenv/bin/python -c 'import playwright, importlib.metadata as m; print\\(\"playwright\", m.version\\(\"playwright\"\\)\\)')",
-      "Bash(curl -s -o /dev/null localhost:8011/)",
-      "Bash(timeout 1200 pwvenv/bin/python notice_check.py)",
-      "Bash(curl -sL --max-time 20 https://aisum-hackathon.web.app/privacy)"
+      "Bash(uv pip install --python .venv/bin/python -r requirements.txt)"
     ]
   }
 }

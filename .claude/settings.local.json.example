@@ -1,5 +1,6 @@
 {
   "env": {
-    "ANTHROPIC_AUTH_TOKEN": "replace-with-your-Claude-Code-key"
+    "ANTHROPIC_AUTH_TOKEN": "replace-with-your-Claude-Code-key",
+    "AISUM_TEAM_KEY": "replace-with-your-MCP-key"
   }
 }
