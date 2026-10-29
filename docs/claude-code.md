@@ -14,33 +14,53 @@ calling tools while you demo, your app's calls can come back `RATE_LIMITED`.
 | `.claude/settings.local.json` | **no** (ignored) | Your keys. Read on top of `settings.json`; the same name here wins. You create it |
 | `.mcp.json` | yes | Connects the AISUM MCP tools. Reads `AISUM_TEAM_KEY` from `settings.local.json`. **Don't put the key in `.mcp.json` — git tracks this file, so the key would be pushed with your code.** |
 
-Create the local settings file and put your Claude Code key in it, and your MCP key if
-you want the product tools (same on every OS). The Claude Code key is not the app key
-from `.env`:
+## 1. Put your keys in `settings.local.json`
+
+Copy the example file. The same line works in a macOS / Linux terminal and in
+PowerShell:
 
 ```bash
 cp .claude/settings.local.json.example .claude/settings.local.json
-# replace "replace-with-your-Claude-Code-key" with your Claude Code LLM key
-# replace "replace-with-your-MCP-key" with your MCP key
 ```
 
-Then start Claude Code from this folder.
+Open `.claude/settings.local.json` in your editor. It has two placeholder values:
 
-The first time, Claude Code asks whether to use the MCP servers in this project's
-`.mcp.json`. Approve `aisum`. Until you do, `claude mcp list` shows it as
-`Pending approval`.
+```json
+{
+  "env": {
+    "ANTHROPIC_AUTH_TOKEN": "replace-with-your-Claude-Code-key",
+    "AISUM_TEAM_KEY": "replace-with-your-MCP-key"
+  }
+}
+```
+
+| Replace | With | Needed? |
+|---|---|---|
+| `replace-with-your-Claude-Code-key` | your **LLM key for Claude Code** | yes |
+| `replace-with-your-MCP-key` | your **MCP key** | only for the product tools |
+
+Keep the quotes; replace only the text inside them. The Claude Code key is not the LLM
+key in `.env` — that one is for your app.
+
+## 2. Start Claude Code and approve `aisum`
+
+Start Claude Code from this folder. The first time, it asks whether to use the MCP
+servers in this project's `.mcp.json`. Approve `aisum`. Until you do,
+`claude mcp list` shows it as `Pending approval`.
 
 **It is working when:** running `/mcp` inside Claude Code lists the `aisum` server as
 connected with its tools, and asking *"search for a warm camping jacket with the aisum
 tools"* returns products.
+
+## If `aisum` is not connected
 
 `claude mcp list` may warn `Missing environment variables: AISUM_TEAM_KEY` — it does not
 read `settings.local.json`, so the warning does not mean the connection is broken.
 `/mcp` inside Claude Code is the real check.
 
 If `/mcp` shows `aisum` as not connected, register it for yourself instead — once, for
-this folder on your machine; the key stays in your Claude Code user settings, outside the repo. The same
-line works in a macOS / Linux terminal and in PowerShell:
+this folder on your machine; the key stays in your Claude Code user settings, outside
+the repo. The same line works in a macOS / Linux terminal and in PowerShell:
 
 ```bash
 claude mcp add --transport http --scope local aisum https://acts.aedi.ai/mcp --header "Authorization: Bearer <your MCP key>"
@@ -48,6 +68,8 @@ claude mcp add --transport http --scope local aisum https://acts.aedi.ai/mcp --h
 
 Then start `claude` again. A server added this way takes precedence over the one in
 `.mcp.json`.
+
+## Good to know
 
 Settings apply to the folder you start `claude` in. Started anywhere else, Claude Code
 uses your own account instead of the gateway.
