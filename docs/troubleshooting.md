@@ -95,7 +95,7 @@ the LLM key — `GET /llm/key/info` (gives `team_id`) and
 `GET /llm/team/info?team_id=…` (gives `max_budget` and `spend`) — see `src/budget.py`.
 A key can only read its own team.
 
-Your team's LLM budget is $100 for the event and the evaluation period. If real users
+Your team's LLM budget is $150 for the event and the evaluation period. If real users
 bring you close to the limit, tell us in Slack before it runs out and we'll review
 raising it.
 
