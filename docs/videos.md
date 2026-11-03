@@ -1,15 +1,15 @@
 # Videos that are ready to use
 
 These videos have already been analysed, so a request with one of them comes back in a few seconds.
-A video nobody has run before has to be analysed first, which takes about a minute and can be refused while the service is busy.
+A video nobody has run before has to be analysed first, which takes a few minutes and can be refused while the service is busy.
 
-Use them while you build and in your live demo. You can use any other public YouTube video too.
+Use them when you need quick, repeated runs while you build, and in your live demo, where a video that comes back in seconds is the safest choice. They're a starting point, not a limit — try the kinds of videos your own idea is about too. Any public YouTube video works, as long as it isn't age-restricted or a live stream.
 
 To use one, give its URL to the **Video match** card or to your agent.
 
 If a new video is refused with `RATE_LIMITED`, wait a few minutes and try once more, or
-switch to a video from this list. Asking again straight away does not help: the limit does
-not change while you wait.
+switch to a video from this list. Retrying straight away won't help — the limit needs a few
+minutes to free up.
 
 | Category | Videos |
 |---|---|
