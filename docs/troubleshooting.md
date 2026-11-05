@@ -130,8 +130,9 @@ for any address a tool made for you: VS Code's port forwarding (the Ports tab, o
 works on `localhost`. Type `localhost:8000` into the browser yourself, or start the app
 from a plain PowerShell / Terminal window. The error line on the page names the address
 it was opened at. On Cloud Run, a new address is added for you within about 10 minutes
-of the first deploy; if sign-in still fails after that, post your team name and the
-`run.app` URL in `#tech-help` — see [checkpoint 6](deploy.md#checkpoint-6--the-deployed-copy).
+of the first deploy; if sign-in still fails after that, post your team name in
+`#tech-help` (no URL needed — we can see your deployed address in your project) — see
+[checkpoint 6](deploy.md#checkpoint-6--the-deployed-copy).
 
 ## The LLM returned `200 OK` but the text is empty
 

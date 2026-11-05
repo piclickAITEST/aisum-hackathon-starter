@@ -105,6 +105,6 @@ If sign-in works on localhost but the deployed page shows `auth/unauthorized-dom
 the new `run.app` address is not yet on the Firebase project's list of allowed sign-in
 domains. AISUM adds deployed addresses for you automatically — **this usually takes
 5–10 minutes after your first deploy**, so wait and reload. **If it still fails after
-10 minutes, post in `#tech-help` with your team name and the full `run.app` URL**, and
-we'll add it by hand. A new address needs this once; redeploying to the same address
-does not.
+10 minutes, post in `#tech-help` with your team name** — no need to share the URL; we
+can see your deployed address in your project — and we'll add it by hand. A new address
+needs this once; redeploying to the same address does not.
